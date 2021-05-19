@@ -1,0 +1,20 @@
+﻿@{
+    var path = ViewData["path"].ToString();
+}
+
+<head>
+    <meta charset="utf-8" />
+    <title>WebAV-播放</title>
+    @Html.Partial("Header")
+</head>
+
+<body>
+    @Html.Partial("Share")
+
+    <div>
+        <video src="@path" controls />
+    </div>
+
+    <script>
+    </script>
+</body>
