@@ -10,19 +10,19 @@ namespace Service
 {
 	public class LogService
 	{
-		public static void ConfigureSerilog()
+		public static void ConfigureSerilog(string logName = "")
 		{
 			Log.Logger = new LoggerConfiguration()
 				.Enrich.WithExceptionDetails()
 				.MinimumLevel.Debug()
 				.WriteTo.Console()
 				.WriteTo.File(
-					System.Configuration.ConfigurationManager.AppSettings["logDebugPath"],
-					 rollingInterval: RollingInterval.Day
+					String.Format(System.Configuration.ConfigurationManager.AppSettings["logDebugPath"], logName, DateTime.Now.ToString("yyyyMMddHHmm")),
+					 rollingInterval: RollingInterval.Infinite
 				)
 				.WriteTo.File(
-					System.Configuration.ConfigurationManager.AppSettings["logErrorPath"],
-					 rollingInterval: RollingInterval.Day,
+					String.Format(System.Configuration.ConfigurationManager.AppSettings["logErrorPath"], logName, DateTime.Now.ToString("yyyyMMddHHmm")),
+					 rollingInterval: RollingInterval.Infinite,
 					 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error
 				)
 				.CreateLogger();

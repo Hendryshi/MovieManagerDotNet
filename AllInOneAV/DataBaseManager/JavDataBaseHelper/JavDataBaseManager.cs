@@ -42,124 +42,213 @@ namespace DataBaseManager.JavDataBaseHelper
 
 		public void InsertCategory(Category category, bool checkExist = true)
 		{
-			if(!checkExist || !ExistCategory(category.Name))
+			try
 			{
-				db.Category.InsertOnSubmit(category);
-				db.SubmitChanges();
+				if(!checkExist || !ExistCategory(category))
+				{
+					db.Category.InsertOnSubmit(category);
+					db.SubmitChanges();
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when inserting category : {category.ToString()}");
+				throw ex;
 			}
 		}
 
-		public bool ExistCategory(string name)
+		public bool ExistCategory(Category cat, bool checkName = true, bool checkUrl = true)
 		{
 			var query = from category in db.Category
-						where category.Name == name
 						select category;
+
+			if(checkName)
+				query = query.Where(c => c.Name == cat.Name);
+
+			if(checkUrl)
+				query = query.Where(c => c.Url == cat.Url);
 
 			return query.ToList().Count > 0;
 		}
 
-		public List<Category> LoadCategory(string name = "")
+		public List<Category> LoadAllCategory()
 		{
-
 			var query = from category in db.Category select category;
+			return query.ToList();
+		}
 
-			if(string.IsNullOrEmpty(name))
-				query.Where(c => c.Name == name);
-
+		public List<Movie> LoadAllMovieByStatus(MovieStatus status)
+		{
+			var query = from movie in db.Movie where movie.IdStatus == (int)status select movie;
 			return query.ToList();
 		}
 
 		public void InsertCompany(Company company, bool checkExist = true)
 		{
-			if(!checkExist || !ExistCompany(company.Name))
+			try
 			{
-				db.Company.InsertOnSubmit(company);
-				db.SubmitChanges();
+				if(!checkExist || !ExistCompany(company))
+				{
+					db.Company.InsertOnSubmit(company);
+					db.SubmitChanges();
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when inserting company : {company.ToString()}");
+				throw ex;
 			}
 		}
 
-		public bool ExistCompany(string name)
+		public bool ExistCompany(Company com, bool checkName = true, bool checkUrl = true)
 		{
 			var query = from company in db.Company
-						where company.Name == name
 						select company;
+
+			if(checkName)
+				query = query.Where(c => c.Name == com.Name);
+
+			if(checkUrl)
+				query = query.Where(c => c.Url == com.Url);
 
 			return query.ToList().Count > 0;
 		}
 
 		public void InsertDirector(Director director, bool checkExist = true)
 		{
-			if(!checkExist || !ExistDirector(director.Name))
+			try
 			{
-				db.Director.InsertOnSubmit(director);
-				db.SubmitChanges();
+				if(!checkExist || !ExistDirector(director))
+				{
+					db.Director.InsertOnSubmit(director);
+					db.SubmitChanges();
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when inserting director : {director.ToString()}");
+				throw ex;
 			}
 		}
 
-		public bool ExistDirector(string name)
+		public bool ExistDirector(Director dir, bool checkName = true, bool checkUrl = true)
 		{
 			var query = from director in db.Director
-						where director.Name == name
 						select director;
+
+			if(checkName)
+				query = query.Where(c => c.Name == dir.Name);
+
+			if(checkUrl)
+				query = query.Where(c => c.Url == dir.Url);
 
 			return query.ToList().Count > 0;
 		}
 
-		public void InsertPublisher(Publisher ublisher, bool checkExist = true)
+		public void InsertPublisher(Publisher publisher, bool checkExist = true)
 		{
-			if(!checkExist || !ExistPublisher(ublisher.Name))
+			try
 			{
-				db.Publisher.InsertOnSubmit(ublisher);
-				db.SubmitChanges();
+				if(!checkExist || !ExistPublisher(publisher))
+				{
+					db.Publisher.InsertOnSubmit(publisher);
+					db.SubmitChanges();
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when inserting publisher : {publisher.ToString()}");
+				throw ex;
 			}
 		}
 
-		public bool ExistPublisher(string name)
+		public bool ExistPublisher(Publisher pub, bool checkName = true, bool checkUrl = true)
 		{
 			var query = from publisher in db.Publisher
-						where publisher.Name == name
 						select publisher;
+
+			if(checkName)
+				query = query.Where(c => c.Name == pub.Name);
+
+			if(checkUrl)
+				query = query.Where(c => c.Url == pub.Url);
 
 			return query.ToList().Count > 0;
 		}
 
 		public void InsertStar(Star star, bool checkExist = true)
 		{
-			if(!checkExist || !ExistStar(star.Name))
+			try
 			{
-				db.Star.InsertOnSubmit(star);
-				db.SubmitChanges();
+				if(!checkExist || !ExistStar(star))
+				{
+					db.Star.InsertOnSubmit(star);
+					db.SubmitChanges();
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when inserting star : {star.ToString()}");
+				throw ex;
 			}
 		}
 
-		public bool ExistStar(string name)
+		public bool ExistStar(Star sta, bool checkName = true, bool checkUrl = true)
 		{
 			var query = from star in db.Star
-						where star.Name == name
 						select star;
+
+			if(checkName)
+				query = query.Where(c => c.Name == sta.Name);
+
+			if(checkUrl)
+				query = query.Where(c => c.Url == sta.Url);
 
 			return query.ToList().Count > 0;
 		}
 
 		public void InsertMovie(Movie movie, bool checkExist = true)
 		{
-			if(!checkExist || !ExistMovie(movie.Number))
+			try
 			{
-				using(TransactionScope ts = new TransactionScope())
+				if(!checkExist || !ExistMovie(movie.Number))
 				{
-					movie.DtUpdate = DateTime.Now;
-					db.Movie.InsertOnSubmit(movie);
-					db.SubmitChanges();
-
-					foreach(MovieRelation mr in movie.MovieRelation)
+					using(TransactionScope ts = new TransactionScope())
 					{
-						mr.IdMovie = movie.IdMovie;
-						db.MovieRelation.InsertOnSubmit(mr);
+						movie.DtUpdate = DateTime.Now;
+						db.Movie.InsertOnSubmit(movie);
 						db.SubmitChanges();
-					}
 
-					ts.Complete();
+						foreach(MovieRelation mr in movie.MovieRelation.GroupBy(x => new { x.IdMovie, x.IdRelation, x.IdTyRole }).Select(y => y.First()))
+						{
+							mr.IdMovie = movie.IdMovie;
+							db.MovieRelation.InsertOnSubmit(mr);
+							db.SubmitChanges();
+						}
+
+						ts.Complete();
+					}
 				}
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when inserting movie : {movie.ToString()}");
+				throw ex;
+			}
+		}
+
+		public void UpdateMovie(Movie movie)
+		{
+			try
+			{
+				Movie lqMovie = db.Movie.Single(x => x.IdMovie == movie.IdMovie);
+				lqMovie.CopyValue(movie);
+				db.SubmitChanges();
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when updating movie : {movie.ToString()}");
+				throw ex;
 			}
 		}
 
@@ -172,36 +261,42 @@ namespace DataBaseManager.JavDataBaseHelper
 			return query.ToList().Count > 0;
 		}
 
-		
-		public Company LoadCompanyByName(string name)
+		public Movie LoadMovieByNumber(string number)
 		{
-			var query = from company in db.Company where company.Name == name select company;
+			var query = from movie in db.Movie where movie.Number == number select movie;
 
 			return query.Count() > 0 ? query.First() : null;
 		}
 
-		public Category LoadCategoryByName(string name)
+		public Company LoadCompany(string name, string url)
 		{
-			var query = from category in db.Category where category.Name == name select category;
-
-			return query.Count() > 0 ? query.First() : null;
-		}
-		public Director LoadDirectorByName(string name)
-		{
-			var query = from director in db.Director where director.Name == name select director;
-
-			return query.Count() > 0 ? query.First() : null;
-		}
-		public Publisher LoadPublisherByName(string name)
-		{
-			var query = from publisher in db.Publisher where publisher.Name == name select publisher;
+			var query = from company in db.Company where company.Name == name && company.Url == url select company;
 
 			return query.Count() > 0 ? query.First() : null;
 		}
 
-		public Star LoadStarByName(string name)
+		public Category LoadCategory(string name, string url)
 		{
-			var query = from star in db.Star where star.Name == name select star;
+			var query = from category in db.Category where category.Name == name && category.Url == url select category;
+
+			return query.Count() > 0 ? query.First() : null;
+		}
+		public Director LoadDirector(string name, string url)
+		{
+			var query = from director in db.Director where director.Name == name && director.Url == url select director;
+
+			return query.Count() > 0 ? query.First() : null;
+		}
+		public Publisher LoadPublisher(string name, string url)
+		{
+			var query = from publisher in db.Publisher where publisher.Name == name && publisher.Url == url select publisher;
+
+			return query.Count() > 0 ? query.First() : null;
+		}
+
+		public Star LoadStar(string name, string url)
+		{
+			var query = from star in db.Star where star.Name == name && star.Url == url select star;
 
 			return query.Count() > 0 ? query.First() : null;
 		}

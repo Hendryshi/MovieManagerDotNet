@@ -24,13 +24,9 @@ namespace NewUnitTest
     {
         static void Main(string[] args)
         {
-			
-			using(JavDataBaseManager dba = new JavDataBaseManager())
-			{
-				dba.InsertAV();
-			}
 
-			
+			Category cat = new Category() { Name = "偷窥", Url = "vl_genre.php?g=ju", DtUpdate = DateTime.Now };
+			Console.WriteLine(cat.ToString());
 
             //var test = OneOneFiveService.RemoveDuplicated115Files();
             //Console.WriteLine(test);

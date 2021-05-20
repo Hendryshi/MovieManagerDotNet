@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.Linq.Mapping;
 using System.Linq;
@@ -18,5 +19,10 @@ namespace Model.JavModels
 		public string Url { get; set; }
 		[Column]
 		public DateTime? DtUpdate { get; set; }
-    }
+
+		public override string ToString()
+		{
+			return JsonConvert.SerializeObject(this);
+		}
+	}
 }

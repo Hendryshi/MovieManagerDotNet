@@ -14,26 +14,29 @@ namespace BatchJavScaner
 	class DownloadCategory
 	{
 		public const string CallingArg = "category";
+		public const string JobName = "DownloadCategory";
 
-		public DownloadCategory() { }
+		public DownloadCategory()
+		{
+			LogService.ConfigureSerilog(JobName);
+		}
 
 		public void RunJob()
 		{
-			Log.Information("Downloading Javlibrary Category");
+			Log.Information($"Start Job {JobName}");
 
 			JavLibraryHelper.GetJavCookieChromeProcess();
 
 			List<Category> lstCategory = JavLibraryHelper.ScanCatogery();
+
+			Log.Information($"{lstCategory.Count} category found. Now saving into DB");
 
 			foreach(Category c in lstCategory)
 			{
 				JavLibraryHelper.SaveCategory(c);
 			}
 
-			foreach(Category c in lstCategory)
-			{
-				Console.WriteLine(c.IdCategory);
-			}
+			Log.Information($"Job {JobName} finised");
 		}
 	}
 }

@@ -71,40 +71,53 @@ namespace Service
 
 		
 		#region Load
-		public static List<Category> LoadCategory()
+		public static List<Category> LoadAllCategory()
 		{
 			using(JavDataBaseManager db = new JavDataBaseManager())
-				return db.LoadCategory();
+				return db.LoadAllCategory();
 		}
 
-		public static Category LoadCategoryByName(string name)
+		public static List<Movie> LoadAllMovieByStatus(MovieStatus status)
 		{
 			using(JavDataBaseManager db = new JavDataBaseManager())
-				return db.LoadCategoryByName(name);
+				return db.LoadAllMovieByStatus(status);
 		}
 
-		public static Company LoadCompanyByName(string name)
+		public static Movie LoadMovieByNumber(string number)
 		{
 			using(JavDataBaseManager db = new JavDataBaseManager())
-				return db.LoadCompanyByName(name);
+				return db.LoadMovieByNumber(number);
 		}
 
-		public static Director LoadDirectorByName(string name)
+
+		public static Category LoadCategory(string name, string url)
 		{
 			using(JavDataBaseManager db = new JavDataBaseManager())
-				return db.LoadDirectorByName(name);
+				return db.LoadCategory(name, url);
 		}
 
-		public static Publisher LoadPublisherByName(string name)
+		public static Company LoadCompany(string name, string url)
 		{
 			using(JavDataBaseManager db = new JavDataBaseManager())
-				return db.LoadPublisherByName(name);
+				return db.LoadCompany(name, url);
 		}
 
-		public static Star LoadStarByName(string name)
+		public static Director LoadDirector(string name, string url)
 		{
 			using(JavDataBaseManager db = new JavDataBaseManager())
-				return db.LoadStarByName(name);
+				return db.LoadDirector(name, url);
+		}
+
+		public static Publisher LoadPublisher(string name, string url)
+		{
+			using(JavDataBaseManager db = new JavDataBaseManager())
+				return db.LoadPublisher(name, url);
+		}
+
+		public static Star LoadStar(string name, string url)
+		{
+			using(JavDataBaseManager db = new JavDataBaseManager())
+				return db.LoadStar(name, url);
 		}
 
 		#endregion
@@ -150,34 +163,42 @@ namespace Service
 		public static List<Movie> ScanPageList(string pageUrl)
 		{
 			List<Movie> lstMovie = new List<Movie>();
-			HtmlDocument htmlDocument = TryGetHtmlDocument(pageUrl);
 
-			if(htmlDocument != null)
+			try
 			{
-				var videoPath = "//div[@class='video']";
-				var videoNodes = htmlDocument.DocumentNode.SelectNodes(videoPath);
+				HtmlDocument htmlDocument = TryGetHtmlDocument(pageUrl);
 
-				if(videoNodes != null)
+				if(htmlDocument != null)
 				{
-					foreach(var node in videoNodes)
-					{
-						var urlAndTitle = node.ChildNodes[0];
-						if(urlAndTitle != null && urlAndTitle.ChildNodes.Count >= 3)
-						{
-							var id = urlAndTitle.ChildNodes[0].InnerText.Trim();
-							var name = FileUtility.ReplaceInvalidChar(urlAndTitle.ChildNodes[2].InnerText.Trim());
-							var avUrl = urlAndTitle.Attributes["href"].Value.Trim().Replace("./", "");
+					var videoPath = "//div[@class='video']";
+					var videoNodes = htmlDocument.DocumentNode.SelectNodes(videoPath);
 
-							if(!string.IsNullOrEmpty(avUrl) && !string.IsNullOrEmpty(name) && !string.IsNullOrWhiteSpace(id))
+					if(videoNodes != null)
+					{
+						foreach(var node in videoNodes)
+						{
+							var urlAndTitle = node.ChildNodes[0];
+							if(urlAndTitle != null && urlAndTitle.ChildNodes.Count >= 3)
 							{
-								lstMovie.Add(new Movie() { Number = id, Title = name, Url = avUrl });
+								var id = urlAndTitle.ChildNodes[0].InnerText.Trim();
+								var name = FileUtility.ReplaceInvalidChar(urlAndTitle.ChildNodes[2].InnerText.Trim());
+								var avUrl = urlAndTitle.Attributes["href"].Value.Trim().Replace("./", "");
+
+								if(!string.IsNullOrEmpty(avUrl) && !string.IsNullOrEmpty(name) && !string.IsNullOrWhiteSpace(id))
+									lstMovie.Add(new Movie() { Number = id, Title = name, Url = avUrl });
+								else
+									Log.Error($"Movie missing information important: id: [{id}] name [{name}] movieUrl [{avUrl}]");
 							}
 						}
 					}
 				}
+				return lstMovie;
 			}
-
-			return lstMovie;
+			catch(Exception ex)
+			{
+				Log.Fatal(ex, $"Error occurred when scanning page {pageUrl}, some movies may not be scanned");
+				return lstMovie;
+			}
 		}
 
 
@@ -185,15 +206,26 @@ namespace Service
 		///		Scan the movie details & save in DB
 		/// </summary>
 		/// <returns></returns>
-		public static void ScanAndDownloadMovieInfo(Movie movie)
+		public static bool ScanAndDownloadMovieInfo(Movie movie)
 		{
-			string domain = "https://www.javlibrary.com/cn/";
-			HtmlDocument htmlDocument = TryGetHtmlDocument(domain + movie.Url);
-
-			if(htmlDocument != null)
+			try
 			{
-				GenerateAVModel(htmlDocument, movie);
-				SaveMovie(movie);
+				string domain = "https://www.javlibrary.com/cn/";
+				HtmlDocument htmlDocument = TryGetHtmlDocument(domain + movie.Url);
+
+				if(htmlDocument != null)
+				{
+					GenerateAVModel(htmlDocument, movie);
+					movie.IdStatus = (int)MovieStatus.Scanned;
+					UpdateMovie(movie);
+				}
+				return true;
+			}
+			catch(Exception ex)
+			{
+				movie.IdStatus = (int)MovieStatus.InError;
+				Log.Fatal(ex, $"Error occurred when scanning movie {movie.Number}");
+				return false;
 			}
 		}
 
@@ -216,7 +248,7 @@ namespace Service
 					lstCategory.Add(new Category { Name = aTagTitle, Url = aTagHref, DtUpdate = DateTime.Now });
 				}
 			}
-
+			
 			return lstCategory;
 		}
 
@@ -247,6 +279,14 @@ namespace Service
 			using(JavDataBaseManager db = new JavDataBaseManager())
 			{
 				db.InsertMovie(movie);
+			}
+		}
+
+		public static void UpdateMovie(Movie movie)
+		{
+			using(JavDataBaseManager db = new JavDataBaseManager())
+			{
+				db.UpdateMovie(movie);
 			}
 		}
 
@@ -290,7 +330,7 @@ namespace Service
 			HtmlDocument html = null;
 			while(retry < 2 && html == null)
 			{
-				html = HtmlManager.GetHtmlDocumentAsync(requestUrl).Result;
+				html = HtmlManager.GetHtmlDocumentAsync(requestUrl, cc).Result;
 
 				if(html == null)
 				{
@@ -298,10 +338,13 @@ namespace Service
 					retry++;
 				}
 			}
+
+			if(html == null && retry == 2)
+				Log.Fatal($"Error when requesting page {requestUrl}");
+
 			return html;
 		}
 
-		
 
 		private static void GenerateAVModel(HtmlDocument htmlDocument, Movie movie)
 		{
@@ -327,8 +370,11 @@ namespace Service
 			movie.PictureUrl = picUrl.Attributes["src"].Value;
 			movie.PictureUrl = movie.PictureUrl.StartsWith("http") ? movie.PictureUrl : "http:" + movie.PictureUrl;
 
-			movie.Title = title;
-			movie.Number = number;
+			if(movie.Title == null) 
+				movie.Title = title;
+			
+			if(movie.Number == null)
+			   movie.Number = number;
 
 			var release = htmlDocument.DocumentNode.SelectSingleNode(dtReleasePath);
 			DateTime rDate = DateTime.MinValue;
@@ -353,7 +399,7 @@ namespace Service
 					var url = dir.Attributes["href"].Value;
 					movie.Director += name + ",";
 
-					Director d = LoadDirectorByName(name);
+					Director d = LoadDirector(name, url);
 					if(d == null)
 					{
 						Log.Information($"Found new Director: {name}");
@@ -362,7 +408,7 @@ namespace Service
 					}
 					movie.MovieRelation.Add(new MovieRelation() { IdRelation = d.IdDirector, IdTyRole = (int)RoleType.Director });
 				}
-				movie.Director.Trim(',');
+				movie.Director = movie.Director.Trim(',');
 			}
 
 			var comNode = htmlDocument.DocumentNode.SelectNodes(comPath);
@@ -374,16 +420,16 @@ namespace Service
 					var url = com.Attributes["href"].Value;
 					movie.Company += name + ",";
 
-					Company d = LoadCompanyByName(name);
+					Company d = LoadCompany(name, url);
 					if(d == null)
 					{
-						Log.Information($"Found new Company: {name}");
+						Log.Information($"Found new Company: {name}; Insert it into DB");
 						d = new Company() { Name = name, Url = url, DtUpdate = DateTime.Now };
 						SaveCompany(d);
 					}
 					movie.MovieRelation.Add(new MovieRelation() { IdRelation = d.IdCompany, IdTyRole = (int)RoleType.Company });
 				}
-				movie.Company.Trim(',');
+				movie.Company = movie.Company.Trim(',');
 			}
 
 			var pubNode = htmlDocument.DocumentNode.SelectNodes(pubPath);
@@ -395,16 +441,16 @@ namespace Service
 					var url = pub.Attributes["href"].Value;
 					movie.Publisher += name + ",";
 
-					Publisher d = LoadPublisherByName(name);
+					Publisher d = LoadPublisher(name, url);
 					if(d == null)
 					{
-						Log.Information($"Found new Publisher: {name}");
+						Log.Information($"Found new Publisher: {name}; Insert it into DB");
 						d = new Publisher() { Name = name, Url = url, DtUpdate = DateTime.Now };
 						SavePublisher(d);
 					}
 					movie.MovieRelation.Add(new MovieRelation() { IdRelation = d.IdPublisher, IdTyRole = (int)RoleType.Publisher });
 				}
-				movie.Publisher.Trim(',');
+				movie.Publisher = movie.Publisher.Trim(',');
 			}
 
 			var catNodes = htmlDocument.DocumentNode.SelectNodes(catPath);
@@ -416,16 +462,16 @@ namespace Service
 					var url = cat.Attributes["href"].Value;
 					movie.Category += name + ",";
 
-					Category d = LoadCategoryByName(name);
+					Category d = LoadCategory(name, url);
 					if(d == null)
 					{
-						Log.Information($"Found new Category: {name}");
+						Log.Information($"Found new Category: {name}; Insert it into DB");
 						d = new Category() { Name = name, Url = url, DtUpdate = DateTime.Now };
 						SaveCategory(d);
 					}
 					movie.MovieRelation.Add(new MovieRelation() { IdRelation = d.IdCategory, IdTyRole = (int)RoleType.Category });
 				}
-				movie.Category.Trim(',');
+				movie.Category = movie.Category.Trim(',');
 			}
 
 			var starNodes = htmlDocument.DocumentNode.SelectNodes(starPath);
@@ -437,21 +483,21 @@ namespace Service
 					var url = star.Attributes["href"].Value;
 					movie.Star += name + ",";
 
-					Star d = LoadStarByName(name);
+					Star d = LoadStar(name, url);
 					if(d == null)
 					{
-						Log.Information($"Found new Star: {name}");
+						Log.Information($"Found new Star: {name}; Insert it into DB");
 						d = new Star() { Name = name, Url = url, DtUpdate = DateTime.Now };
 						SaveStar(d);
 					}
 					movie.MovieRelation.Add(new MovieRelation() { IdRelation = d.idStar, IdTyRole = (int)RoleType.Star });
 				}
-				movie.Star.Trim(',');
+				movie.Star = movie.Star.Trim(',');
 			}
 		}
 
 		
-		private static void RefreshCookie(int mintutes)
+		public static void RefreshCookie(int mintutes)
 		{
 			while(true)
 			{

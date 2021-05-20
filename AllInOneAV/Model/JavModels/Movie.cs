@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.Linq.Mapping;
 using System.Linq;
@@ -36,7 +37,40 @@ namespace Model.JavModels
 		public string PictureUrl { get; set; }
 		[Column]
 		public string Url { get; set; }
+		[Column]
+		public int IdStatus { get; set; }
 
 		public List<MovieRelation> MovieRelation { get; set; } = new List<MovieRelation>();
+
+		public override string ToString()
+		{
+			return JsonConvert.SerializeObject(this);
+		}
+
+		public void CopyValue(Movie movie)
+		{
+			this.Number = movie.Number;
+			this.Title = movie.Title;
+			this.Company = movie.Company;
+			this.Director = movie.Director;
+			this.Publisher = movie.Publisher;
+			this.Category = movie.Category;
+			this.Star = movie.Star;
+			this.DtRelease = movie.DtRelease;
+			this.Duration = movie.Duration;
+			this.DtUpdate = movie.DtUpdate;
+			this.PictureUrl = movie.PictureUrl;
+			this.Url = movie.Url;
+			this.IdStatus = movie.IdStatus;
+		}
+	}
+
+	public enum MovieStatus
+	{
+		NotScanned = 0,
+		Scanned = 1,
+		Downloading = 2,
+		Downloaded = 3,
+		InError = 4
 	}
 }

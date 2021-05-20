@@ -19,9 +19,6 @@ namespace BatchJavScaner
         public static void Main(string[] args)
         {
             LockModel lockModel = new LockModel();
-			LogService.ConfigureSerilog();
-
-
             if (args[0] == "daily")
             {
                 //JavLibraryHelper.DoDailyUpdate(200, true);
@@ -36,6 +33,14 @@ namespace BatchJavScaner
             {
 				//JavLibraryHelper.DoFullScanSingleThread(true);
 				FullScanSingleThread fs = new FullScanSingleThread();
+				fs.RunJob();
+				Console.ReadKey();
+			}
+
+			if(args[0] == DownloadSingleMovie.CallingArg)
+			{
+				//JavLibraryHelper.DoFullScanSingleThread(true);
+				DownloadSingleMovie fs = new DownloadSingleMovie();
 				fs.RunJob();
 				Console.ReadKey();
 			}

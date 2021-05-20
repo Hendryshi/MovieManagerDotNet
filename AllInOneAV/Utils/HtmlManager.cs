@@ -101,7 +101,7 @@ namespace Utils
 			}
 			catch(Exception ex)
 			{
-				Log.Error(ex, $"Exception when requesting url: {requestUrl}");
+				//Log.Error(ex, $"Exception when requesting url: {requestUrl}");
 			}
 
 			return null;
