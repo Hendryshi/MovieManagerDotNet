@@ -1,22 +1,9 @@
-﻿using DataBaseManager.JavDataBaseHelper;
-using HtmlAgilityPack;
-using Microsoft.Win32.TaskScheduler;
-using Model.Common;
-using Model.JavModels;
-using Model.OneOneFive;
-using Model.ScanModels;
-using Model.WebModel;
-using Newtonsoft.Json;
+﻿using Model.JavModels;
 using Service;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Utils;
+using Service;
+using Serilog;
 
 namespace NewUnitTest
 {
@@ -24,6 +11,42 @@ namespace NewUnitTest
     {
         static void Main(string[] args)
         {
+
+			//List<MovieRelation> lstMovieRelation = new List<MovieRelation>();
+
+			//lstMovieRelation.Add(new MovieRelation() { IdMovie = 1, IdTyRole = 1, IdRelation = 1 });
+			//lstMovieRelation.Add(new MovieRelation() { IdMovie = 1, IdTyRole = 1, IdRelation = 1 });
+			//lstMovieRelation.Add(new MovieRelation() { IdMovie = 1, IdTyRole = 2, IdRelation = 1 });
+			//lstMovieRelation.Add(new MovieRelation() { IdMovie = 1, IdTyRole = 3, IdRelation = 1 });
+
+			//foreach(MovieRelation mr in lstMovieRelation.GroupBy(x => new { x.IdMovie, x.IdRelation, x.IdTyRole }).Select(y => y.First()))
+			//{
+			//	Console.WriteLine(mr.ToString());
+			//}
+
+			LogService.ConfigureSerilog("test");
+
+			Console.Write("Performing some task... ");
+
+			Log.Information("Performing some task... ");
+			Log.Information("Performing so ");
+			Log.Information("Performing some task... ");
+			Log.Information("Performing some task... ");
+			Log.Information("Performing some task... ");
+			Log.Information("Performing so ");
+			Log.Information("Performing some task... ");
+			Log.Information("Performing some task... ");
+
+			Console.SetCursorPosition(0, 4);
+				Log.Information("Performing some task... ");
+				Log.Information("Performing so ");
+				Log.Information("Performing some task... ");
+				Log.Information("Performing some task... ");
+				
+				Thread.Sleep(20);
+			
+			Console.WriteLine("Done.");
+
 
 			Category cat = new Category() { Name = "偷窥", Url = "vl_genre.php?g=ju", DtUpdate = DateTime.Now };
 			Console.WriteLine(cat.ToString());

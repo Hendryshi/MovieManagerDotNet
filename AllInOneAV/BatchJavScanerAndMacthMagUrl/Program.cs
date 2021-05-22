@@ -1,5 +1,4 @@
 ﻿using DataBaseManager.JavDataBaseHelper;
-using Model.Common;
 using Model.JavModels;
 using Service;
 using System;
@@ -18,7 +17,6 @@ namespace BatchJavScaner
     {
         public static void Main(string[] args)
         {
-            LockModel lockModel = new LockModel();
             if (args[0] == "daily")
             {
                 //JavLibraryHelper.DoDailyUpdate(200, true);

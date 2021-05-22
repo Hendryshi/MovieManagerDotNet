@@ -1,6 +1,5 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Win32;
-using Model.Common;
 using Model.JavModels;
 using Serilog;
 using System;
@@ -172,50 +171,7 @@ namespace Utils
             return res;
         }
 
-        public static NeedToUpdate NeedToUpdateCookie(string url, string end = "utf-8", bool isJav = false, CookieContainer cc = null)
-        {
-            NeedToUpdate ret = new NeedToUpdate();
-            ret.Content = new Model.JavModels.HtmlResponse();
-
-            try
-            {
-                GC.Collect();
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.Credentials = CredentialCache.DefaultCredentials;
-                request.Proxy = null;
-                request.Timeout = 90000;
-                request.UserAgent = string.Format(UserAgent, GetChromeVersion());
-                request.Method = "GET";
-
-                if (isJav)
-                {
-                    request.CookieContainer = cc;
-                }
-
-                request.KeepAlive = true;
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                Stream dataStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream, Encoding.GetEncoding(end));
-
-                ret.Content.Content = reader.ReadToEnd();
-                reader.Close();
-                dataStream.Close();
-                response.Close();
-            }
-            catch (Exception e)
-            {
-                if (e.Message == Error)
-                {
-                    ret.Content.Success = false;
-                    ret.Need = true;
-                    return ret;
-                }
-            }
-
-            ret.Content.Success = true;
-            ret.Need = false;
-            return ret;
-        }
+        
 
         public static string Post(string url, Dictionary<string, string> dic, CookieContainer cc = null)
         {

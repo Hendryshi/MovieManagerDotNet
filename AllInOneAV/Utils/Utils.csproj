@@ -146,7 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationLog.cs" />
-    <Compile Include="AVFileHelper.cs" />
     <Compile Include="Broswer.cs" />
     <Compile Include="CacheTool.cs" />
     <Compile Include="ChromeCookieReader.cs" />

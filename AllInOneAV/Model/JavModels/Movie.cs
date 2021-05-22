@@ -62,6 +62,7 @@ namespace Model.JavModels
 			this.PictureUrl = movie.PictureUrl;
 			this.Url = movie.Url;
 			this.IdStatus = movie.IdStatus;
+			this.MovieRelation = movie.MovieRelation;
 		}
 	}
 

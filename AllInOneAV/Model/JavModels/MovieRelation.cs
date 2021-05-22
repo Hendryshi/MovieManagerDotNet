@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
+using Newtonsoft.Json;
 
 namespace Model.JavModels
 {
@@ -18,7 +19,12 @@ namespace Model.JavModels
 
 		[Column(IsPrimaryKey = true)]
 		public int IdRelation { get; set; }
-    }
+
+		public override string ToString()
+		{
+			return JsonConvert.SerializeObject(this);
+		}
+	}
 
 	public enum RoleType
 	{

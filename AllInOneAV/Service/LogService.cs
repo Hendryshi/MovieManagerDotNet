@@ -17,12 +17,12 @@ namespace Service
 				.MinimumLevel.Debug()
 				.WriteTo.Console()
 				.WriteTo.File(
-					String.Format(System.Configuration.ConfigurationManager.AppSettings["logDebugPath"], logName, DateTime.Now.ToString("yyyyMMddHHmm")),
-					 rollingInterval: RollingInterval.Infinite
+					String.Format(System.Configuration.ConfigurationManager.AppSettings["logDebugPath"], logName),
+					 rollingInterval: RollingInterval.Day
 				)
 				.WriteTo.File(
-					String.Format(System.Configuration.ConfigurationManager.AppSettings["logErrorPath"], logName, DateTime.Now.ToString("yyyyMMddHHmm")),
-					 rollingInterval: RollingInterval.Infinite,
+					String.Format(System.Configuration.ConfigurationManager.AppSettings["logErrorPath"], logName),
+					 rollingInterval: RollingInterval.Day,
 					 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error
 				)
 				.CreateLogger();

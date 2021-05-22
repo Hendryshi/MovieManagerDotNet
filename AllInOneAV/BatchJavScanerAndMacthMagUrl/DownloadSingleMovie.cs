@@ -24,7 +24,6 @@ namespace BatchJavScaner
 		public void RunJob()
 		{
 			Log.Information($"Job {JobName} Start");
-			string domain = "https://www.javlibrary.com/cn/";
 			List<Movie> lstFailedMovie = new List<Movie>();
 
 			try

@@ -2,7 +2,6 @@
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using Model.Common;
 using Model.JavModels;
-using Model.ScanModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -1059,61 +1058,7 @@ namespace Utils
             return Math.Min(Math.Min(a, b), c);
         }
 
-        public static void CollectExistAvFile(string FFmpeg, DateTime date)
-        {
-            List<AvInfo> infos = new List<AvInfo>();
-            List<FileInfo> fInfos = new List<FileInfo>();
-
-            foreach (var drive in Environment.GetLogicalDrives())
-            {
-                var targetFolder = drive + "\\fin\\";
-
-                if (Directory.Exists(targetFolder))
-                {
-                    fInfos.AddRange(new DirectoryInfo(targetFolder).GetFiles());
-                }
-            }
-
-            foreach (var fi in fInfos)
-            {
-                CollectExistAvInfo(infos, fi, FFmpeg);
-            }
-
-            var fileName = "G:\\AllScan" + date.ToString("yyyyMMdd") + ".json";
-            if (File.Exists(fileName))
-            {
-                File.Delete(fileName);
-
-                Thread.Sleep(100);
-            }
-            File.Create(fileName).Close();
-            StreamWriter sw = new StreamWriter(fileName);
-            sw.WriteLine(JsonConvert.SerializeObject(infos));
-            sw.Close();
-        }
-
-        public async static void CollectExistAvInfo(List<AvInfo> infos, FileInfo info, string ffmpeg)
-        {
-            AvInfo i = new AvInfo();
-
-            i.Location = info.DirectoryName;
-            i.Name = info.Name.Replace(info.Extension, "");
-            i.Extension = info.Extension;
-            i.Size = info.Length;
-            i.IsChinese = (i.Name.EndsWith("-C") || i.Name.EndsWith("-c"));
-            i.CreateTime = i.CreateTime;
-
-            try
-            {
-                //i.IsH265 = await FileUtility.IsH265(info.FullName, ffmpeg);
-            }
-            catch (Exception ee)
-            {
-
-            }
-
-            infos.Add(i);
-        }
+       
 
         public static int TransferFileUsingSystem(List<string> from, string to, bool isMove = false, bool showAlert = true)
         {
