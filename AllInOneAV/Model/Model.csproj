@@ -38,6 +38,7 @@
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +52,7 @@
     <Compile Include="Common\AvFile.cs" />
     <Compile Include="Common\BtsowSearchModel.cs" />
     <Compile Include="Common\CheckDuplcateModel.cs" />
+    <Compile Include="Common\Config.cs" />
     <Compile Include="Common\ConfigType.cs" />
     <Compile Include="Common\Email.cs" />
     <Compile Include="Common\EverythingSearchEnum.cs" />

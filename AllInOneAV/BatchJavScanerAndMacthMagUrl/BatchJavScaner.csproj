@@ -25,7 +25,7 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -98,9 +98,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DownloadCategory.cs" />
-    <Compile Include="DownloadSingleMovie.cs" />
-    <Compile Include="FullScanSingleThread.cs" />
+    <Compile Include="ScanCategory.cs" />
+    <Compile Include="ScanMovieFromDB.cs" />
+    <Compile Include="ScanNewReleased.cs" />
+    <Compile Include="FullScanByCategory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

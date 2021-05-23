@@ -17,41 +17,29 @@ namespace BatchJavScaner
     {
         public static void Main(string[] args)
         {
-            if (args[0] == "daily")
-            {
-                //JavLibraryHelper.DoDailyUpdate(200, true);
-            }
-
-            if (args[0] == "full")
-            {
-                //JavLibraryHelper.DoFullScan(true);
-            }
-
-            if (args[0] == FullScanSingleThread.CallingArg)
-            {
-				//JavLibraryHelper.DoFullScanSingleThread(true);
-				FullScanSingleThread fs = new FullScanSingleThread();
-				fs.RunJob();
-				Console.ReadKey();
-			}
-
-			if(args[0] == DownloadSingleMovie.CallingArg)
+			if(args[0] == ScanNewReleased.CallingArg)
 			{
-				//JavLibraryHelper.DoFullScanSingleThread(true);
-				DownloadSingleMovie fs = new DownloadSingleMovie();
-				fs.RunJob();
-				Console.ReadKey();
+				ScanNewReleased sr = new ScanNewReleased();
+				sr.RunJob();
+
+				if(args.Length > 1)
+				{
+					if(args[1] == ScanMovieFromDB.CallingArg)
+					{
+						ScanMovieFromDB sm = new ScanMovieFromDB();
+						sm.RunJob();
+					}
+				}
 			}
 
-			if(args[0] == DownloadCategory.CallingArg)
-			{
-				//JavLibraryHelper.DoFullScanSingleThread(true);
-				DownloadCategory dc = new DownloadCategory();
-				dc.RunJob();
-				Console.ReadKey();
+			if (args[0] == FullScanByCategory.CallingArg)
+            {
+				FullScanByCategory fsc = new FullScanByCategory();
+				fsc.RunJob();
 			}
 
-			
+			//TODO
+			//Add Help Command
         }
     }
 }

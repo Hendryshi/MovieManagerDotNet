@@ -11,14 +11,17 @@ using DataBaseManager.JavDataBaseHelper;
 
 namespace BatchJavScaner
 {
-	class DownloadSingleMovie
+	class ScanMovieFromDB
 	{
-		public const string CallingArg = "single-movie";
-		public const string JobName = "DownloadSingleMovie";
+		public const string CallingArg = "sm";
+		public const string JobName = "ScanMovieFromDB";
+		public int ScanCount = 10000;
 
-		public DownloadSingleMovie()
+		public ScanMovieFromDB(int scanCount = 0)
 		{
-			LogService.ConfigureSerilog("DownloadSingleMovie");
+			LogService.ConfigureSerilog(JobName);
+			if(scanCount != 0)
+				this.ScanCount = scanCount;
 		}
 
 		public void RunJob()
@@ -29,28 +32,26 @@ namespace BatchJavScaner
 			try
 			{
 				JavLibraryHelper.GetJavCookieChromeProcess();
-				Task.Run(() => JavLibraryHelper.RefreshCookie(15));
-				List<Movie> lstMovie = JavLibraryHelper.LoadAllMovieByStatus(MovieStatus.NotScanned).Take(5000).ToList();
+				Task.Run(() => JavLibraryHelper.RefreshCookie(60));
+				List<Movie> lstMovie = JavLibraryHelper.LoadAllMovieByStatus(MovieStatus.NotScanned).Take(ScanCount).ToList();
 
 				Log.Information($"{lstMovie.Count} movies will be treated");
 
 				foreach(Movie movie in lstMovie)
 				{
-					if(!JavLibraryHelper.ScanAndDownloadMovieInfo(movie))
-						lstFailedMovie.Add(movie);
+					if(JavLibraryHelper.ScanAndDownloadMovieInfo(movie))
+						Log.Debug($"Movie {movie.Number} has been treated");
 				}
 
 				Log.Information($"{lstMovie.FindAll(x => x.IdStatus == (int)MovieStatus.Scanned).Count} movies have been saved into DB");
-				
 				Log.Information($"Job {JobName} finised.");
 
-				foreach(Movie movie in lstFailedMovie)
+				foreach(Movie movie in lstMovie.FindAll(m => m.IdStatus == (int)MovieStatus.InError))
 					Log.Warning($"Movie {movie.Number} Url [{movie.Url}] failed. Please check");
-
 			}
 			catch(Exception ex)
 			{
-				Log.Fatal(ex, "Error occurred when doing job");
+				Log.Fatal(ex, $"Error occurred when doing job {JobName}");
 			}
 		}
 	}

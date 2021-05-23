@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Security.Policy;
 using System.Threading;
-using System.Threading.Tasks;
 using DataBaseManager.JavDataBaseHelper;
 using HtmlAgilityPack;
 using Model.JavModels;
-using Newtonsoft.Json;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+using Model.Common;
 using Serilog;
 using Utils;
 using Publisher = Model.JavModels.Publisher;
@@ -208,13 +201,13 @@ namespace Service
 		{
 			try
 			{
-				string domain = "https://www.javlibrary.com/cn/";
-				HtmlDocument htmlDocument = TryGetHtmlDocument(domain + movie.Url);
+				HtmlDocument htmlDocument = TryGetHtmlDocument(JavLibrary.Domain + movie.Url);
 
 				if(htmlDocument != null)
 				{
 					GenerateAVModel(htmlDocument, movie);
 					movie.IdStatus = (int)MovieStatus.Scanned;
+					movie.DtUpdate = DateTime.Now;
 					UpdateMovie(movie);
 				}
 				return true;
@@ -503,7 +496,7 @@ namespace Service
 
 				GetJavCookie(false);
 
-				Console.WriteLine("*********************更新Cookie*********************");
+				Console.WriteLine("*********************Refresh Cookie*********************");
 			}
 		}
 	}
