@@ -68,7 +68,7 @@ namespace Utils
         }
 
 
-		public static async Task<HtmlDocument> GetHtmlDocumentAsync(string requestUrl, CookieContainer cc = null, string userAgent = "")
+		public static async Task<HtmlDocument> GetHtmlDocumentAsync(string requestUrl, CookieContainer cc = null, string userAgent = "", Dictionary<String, String> headers = null)
 		{
 			try
 			{
@@ -85,6 +85,12 @@ namespace Utils
 				{
 					client.DefaultRequestHeaders.Add("Cookie", ccStr);
 					client.DefaultRequestHeaders.Add("User-Agent", DefaultUserAgent);
+					if(headers != null)
+					{
+						foreach(var item in headers)
+							client.DefaultRequestHeaders.Add(item.Key, item.Value);
+					}
+
 					var html = await client.GetStringAsync(requestUrl);
 					
 					if(string.IsNullOrWhiteSpace(html) == false)
@@ -93,17 +99,13 @@ namespace Utils
 						doc.LoadHtml(html);
 						return doc;
 					}
-					else
-						Log.Information("error");
-
+					return null;
 				}
 			}
 			catch(Exception ex)
 			{
-				//Log.Error(ex, $"Exception when requesting url: {requestUrl}");
+				return null;
 			}
-
-			return null;
 		}
 
 		public static HtmlResponse GetHtmlContentViaUrl(string url, string end = "utf-8",  bool isJav = false, CookieContainer cc = null, string agent = "")

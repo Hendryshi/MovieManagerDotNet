@@ -193,6 +193,21 @@ namespace DataBaseManager.JavDataBaseHelper
 			}
 		}
 
+		public void InsertMovieMagnet(MovieMagnet movieMagnet)
+		{
+			try
+			{
+				db.MovieMagnet.InsertOnSubmit(movieMagnet);
+				db.SubmitChanges();
+			}
+			catch(Exception ex)
+			{
+				Log.Fatal($"Error when inserting movieMagnet : {movieMagnet.ToString()}");
+				throw ex;
+			}
+		}
+
+
 		public bool ExistStar(Star sta, bool checkName = true, bool checkUrl = true)
 		{
 			var query = from star in db.Star

@@ -25,15 +25,15 @@ namespace BatchJavScaner
 		{
 			Log.Information($"Start Job {JobName}");
 
-			JavLibraryHelper.GetJavCookieChromeProcess();
+			JavLibaryService.GetJavCookieChromeProcess();
 
-			List<Category> lstCategory = JavLibraryHelper.ScanCatogery();
+			List<Category> lstCategory = JavLibaryService.ScanCatogery();
 
 			Log.Information($"{lstCategory.Count} category found. Now saving into DB");
 
 			foreach(Category c in lstCategory)
 			{
-				JavLibraryHelper.SaveCategory(c);
+				JavLibaryService.SaveCategory(c);
 			}
 
 			Log.Information($"Job {JobName} finised");

@@ -22,5 +22,6 @@ namespace DataBaseManager.Common
 		public Table<Star> Star;
 		public Table<Director> Director;
 		public Table<MovieRelation> MovieRelation;
+		public Table<MovieMagnet> MovieMagnet;
 	}
 }

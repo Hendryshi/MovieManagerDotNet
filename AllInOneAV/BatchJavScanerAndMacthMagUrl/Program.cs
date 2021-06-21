@@ -32,6 +32,12 @@ namespace BatchJavScaner
 				}
 			}
 
+			if(args[0] == ScanMovieMagnet.CallingArg)
+			{
+				ScanMovieMagnet smm = new ScanMovieMagnet();
+				smm.RunJob();
+			}
+
 			if (args[0] == FullScanByCategory.CallingArg)
             {
 				FullScanByCategory fsc = new FullScanByCategory();

@@ -31,15 +31,15 @@ namespace BatchJavScaner
 
 			try
 			{
-				JavLibraryHelper.GetJavCookieChromeProcess();
-				Task.Run(() => JavLibraryHelper.RefreshCookie(60));
-				List<Movie> lstMovie = JavLibraryHelper.LoadAllMovieByStatus(MovieStatus.NotScanned).Take(ScanCount).ToList();
+				JavLibaryService.GetJavCookieChromeProcess();
+				Task.Run(() => JavLibaryService.RefreshCookie(60));
+				List<Movie> lstMovie = JavLibaryService.LoadAllMovieByStatus(MovieStatus.NotScanned).Take(ScanCount).ToList();
 
 				Log.Information($"{lstMovie.Count} movies will be treated");
 
 				foreach(Movie movie in lstMovie)
 				{
-					if(JavLibraryHelper.ScanAndDownloadMovieInfo(movie))
+					if(JavLibaryService.ScanAndDownloadMovieInfo(movie))
 						Log.Debug($"Movie {movie.Number} has been treated");
 				}
 

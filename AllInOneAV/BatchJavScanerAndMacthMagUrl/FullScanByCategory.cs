@@ -26,21 +26,21 @@ namespace BatchJavScaner
 			Log.Information($"Job {JobName} Start");
 			try
 			{
-				JavLibraryHelper.GetJavCookieChromeProcess();
-				Task.Run(() => JavLibraryHelper.RefreshCookie(15));
-				List<Category> lstCategory = JavLibraryHelper.LoadAllCategory(); //.FindAll(l => l.IdCategory >= 241 && l.IdCategory <= 280 && l.IdCategory != 268);
+				JavLibaryService.GetJavCookieChromeProcess();
+				Task.Run(() => JavLibaryService.RefreshCookie(15));
+				List<Category> lstCategory = JavLibaryService.LoadAllCategory(); //.FindAll(l => l.IdCategory >= 241 && l.IdCategory <= 280 && l.IdCategory != 268);
 				List<Movie> lstMovie = new List<Movie>();
 				
 				Parallel.ForEach(lstCategory, new ParallelOptions { MaxDegreeOfParallelism = 5 }, category =>
 				{
-					int pageCount = JavLibraryHelper.GetPageCount(JavLibrary.Domain + category.Url);
+					int pageCount = JavLibaryService.GetPageCount(JavLibrary.Domain + category.Url);
 					List<Movie> lstCurrentCategory = new List<Movie>();
 
 					if(pageCount > 0)
 					{
 						for(int currentPage = 1; currentPage <= pageCount; currentPage++)
 						{
-							List<Movie> lstMovieCurrentPage = JavLibraryHelper.ScanPageList(JavLibrary.Domain + category.Url + $"&page={currentPage}");
+							List<Movie> lstMovieCurrentPage = JavLibaryService.ScanPageList(JavLibrary.Domain + category.Url + $"&page={currentPage}");
 							lstCurrentCategory.AddRange(lstMovieCurrentPage);
 						}
 
@@ -54,13 +54,13 @@ namespace BatchJavScaner
 				Log.Information($"Scanning page finised. Found {lstMovie.Count} movies. Now removing the duplicated movies");
 
 				lstMovie = lstMovie.GroupBy(x => x.Url).Select(x => x.First()).ToList();
-				lstMovie = lstMovie.FindAll(x => JavLibraryHelper.LoadMovieByNumber(x.Number) == null);
+				lstMovie = lstMovie.FindAll(x => JavLibaryService.LoadMovieByNumber(x.Number) == null);
 
 				Log.Information($"{lstMovie.Count} movies rest and ready to scan the detailed information & saved in DB");
 
 				foreach(Movie movie in lstMovie)
 				{
-					JavLibraryHelper.SaveMovie(movie);
+					JavLibaryService.SaveMovie(movie);
 				}
 
 				Log.Information($"Job {JobName} Finished");

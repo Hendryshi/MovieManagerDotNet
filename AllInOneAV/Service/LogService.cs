@@ -22,7 +22,7 @@ namespace Service
 				)
 				.WriteTo.File(
 					String.Format(System.Configuration.ConfigurationManager.AppSettings["logErrorPath"], logName),
-					 rollingInterval: RollingInterval.Day,
+					 //rollingInterval: RollingInterval.Day,
 					 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error
 				)
 				.CreateLogger();

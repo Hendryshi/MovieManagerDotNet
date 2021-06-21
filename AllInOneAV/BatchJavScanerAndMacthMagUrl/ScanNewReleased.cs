@@ -27,18 +27,18 @@ namespace BatchJavScaner
 			try
 			{
 				Log.Information("Get Javlibrary Cookie");
-				JavLibraryHelper.GetJavCookieChromeProcess();
-				//Task.Run(() => JavLibraryHelper.RefreshCookie(30));
+				JavLibaryService.GetJavCookieChromeProcess();
+				//Task.Run(() => JavLibaryService.RefreshCookie(30));
 				List<Movie> lstMovie = new List<Movie>();
 
-				int pageCount = JavLibraryHelper.GetPageCount(JavLibrary.NewReleaseUrl);
+				int pageCount = JavLibaryService.GetPageCount(JavLibrary.NewReleaseUrl);
 
 				if(pageCount > 0)
 				{
 					Log.Information($"Found {pageCount} pages. Now scanning movie on each page");
 					for(int currentPage = 1; currentPage <= pageCount; currentPage++)
 					{
-						List<Movie> lstMovieCurrentPage = JavLibraryHelper.ScanPageList(JavLibrary.NewReleaseUrl + $"?&mode=&page={currentPage}");
+						List<Movie> lstMovieCurrentPage = JavLibaryService.ScanPageList(JavLibrary.NewReleaseUrl + $"?&mode=&page={currentPage}");
 						lstMovie.AddRange(lstMovieCurrentPage);
 					}
 				}
@@ -46,13 +46,13 @@ namespace BatchJavScaner
 				Log.Information($"Scanning page finised. Found {lstMovie.Count} movies. Now removing the duplicated movies");
 
 				lstMovie = lstMovie.GroupBy(x => x.Url).Select(x => x.First()).ToList();
-				lstMovie = lstMovie.FindAll(x => JavLibraryHelper.LoadMovieByNumber(x.Number) == null);
+				lstMovie = lstMovie.FindAll(x => JavLibaryService.LoadMovieByNumber(x.Number) == null);
 
 				Log.Information($"{lstMovie.Count} movies rest and ready to scan the detailed information & saved in DB");
 
 				foreach(Movie movie in lstMovie)
 				{
-					JavLibraryHelper.SaveMovie(movie);
+					JavLibaryService.SaveMovie(movie);
 					Log.Debug($"Movie {movie.Number} has been saved into DB");
 				}
 

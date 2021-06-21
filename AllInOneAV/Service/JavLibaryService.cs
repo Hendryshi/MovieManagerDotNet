@@ -12,7 +12,7 @@ using Publisher = Model.JavModels.Publisher;
 
 namespace Service
 {
-	public class JavLibraryHelper
+	public class JavLibaryService
 	{
 		private static CookieContainer cc = new CookieContainer();
 		private static readonly string ImgFolder = JavINIClass.IniReadValue("Jav", "imgFolder");
@@ -310,6 +310,14 @@ namespace Service
 			using(JavDataBaseManager db = new JavDataBaseManager())
 			{
 				db.InsertStar(star);
+			}
+		}
+
+		public static void SaveMovieMagnet(MovieMagnet movieMagnet)
+		{
+			using(JavDataBaseManager db = new JavDataBaseManager())
+			{
+				db.InsertMovieMagnet(movieMagnet);
 			}
 		}
 

@@ -21,7 +21,7 @@
 
 //namespace Service
 //{
-//    public class JavLibraryHelper
+//    public class JavLibaryService
 //    {
 //        private static CookieContainer cc = new CookieContainer();
 //        private static readonly string ImgFolder = JavINIClass.IniReadValue("Jav", "imgFolder");
